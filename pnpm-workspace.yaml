@@ -6,4 +6,5 @@ minimumReleaseAgeExclude:
 
 ignoreScripts: false
 
-onlyBuiltDependencies: '@prisma/engines'
+onlyBuiltDependencies:
+  - '@prisma/engines'
