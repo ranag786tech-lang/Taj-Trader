@@ -36,9 +36,9 @@ const categories = [
 ]
 
 const products = [
-  { brand: 'Nippon Paint', name: 'Vinilex 5000', type: 'Interior emulsion', size: '1L · 4L · 16L', tone: 'navy' },
-  { brand: 'Brighto', name: 'Weather Shield', type: 'Exterior protection', size: '1L · 4L · 16L', tone: 'terracotta' },
-  { brand: 'Master Paints', name: 'Wood Finish', type: 'Wood & metal finish', size: '500ml · 1L · 4L', tone: 'ochre' },
+  { brand: 'Master Paints', name: 'Interior Emulsion', type: 'Interior paint', size: '1L · 4L · 16L', tone: 'navy' },
+  { brand: 'Diamond Paints', name: 'Weather Shield', type: 'Exterior protection', size: '1L · 4L · 16L', tone: 'terracotta' },
+  { brand: 'Duramax Paints', name: 'Wood Finish', type: 'Wood & metal finish', size: '500ml · 1L · 4L', tone: 'ochre' },
 ]
 
 function Logo() {
@@ -73,6 +73,11 @@ function CategorySection() {
 
 function ProductsSection() {
   const [catalogProducts, setCatalogProducts] = useState(products)
+  const [catalogBrands, setCatalogBrands] = useState([
+    { id: 'master-paints', name: 'Master Paints', logo: 'MP' },
+    { id: 'diamond-paints', name: 'Diamond Paints', logo: 'DP' },
+    { id: 'duramax-paints', name: 'Duramax Paints', logo: 'DX' },
+  ])
 
   useEffect(() => {
     async function loadCatalog() {
@@ -84,12 +89,17 @@ function ProductsSection() {
         if (!productsResponse.ok || !brandsResponse.ok) return
         const remoteProducts = await productsResponse.json()
         const brands = await brandsResponse.json()
+        if (Array.isArray(brands) && brands.length > 0) {
+          setCatalogBrands(brands.filter((brand: { slug: string; isActive?: boolean }) =>
+            ['master-paints', 'diamond-paints', 'duramax-paints'].includes(brand.slug) && brand.isActive !== false,
+          ))
+        }
         if (!Array.isArray(remoteProducts) || remoteProducts.length === 0) return
 
         setCatalogProducts(remoteProducts.map((product: { name: string; brandId: string; type?: string; sizes?: string[] }, index: number) => {
-          const brand = brands.find((item: { id: string }) => item.id === product.brandId)
+          const brand = brands.find((item: { id: string; slug?: string }) => item.id === product.brandId)
           return {
-            brand: brand?.name || 'Taj Traders',
+            brand: ['Master Paints', 'Diamond Paints', 'Duramax Paints'].includes(brand?.name) ? brand.name : 'Master Paints',
             name: product.name,
             type: product.type || 'Paint & finishing product',
             size: product.sizes?.join(' · ') || 'Ask for sizes',
@@ -97,14 +107,19 @@ function ProductsSection() {
           }
         }))
       } catch {
-        // Keep the curated fallback catalog when KV is unavailable.
+        // Keep the curated catalog when KV is unavailable.
       }
     }
 
     loadCatalog()
   }, [])
 
-  return <section className="section" id="brands"><div className="section-heading"><div><p className="eyebrow">Popular picks</p><h2>Good products.<br /><em>Great advice.</em></h2></div><p className="section-intro">We stock trusted paints and finishing products from brands chosen for real-world performance.</p></div><div className="product-grid">{catalogProducts.map((product) => <article className="product-card" key={product.name}><div className={`product-image ${product.tone}`}><div className="can"><span>{product.brand.split(' ')[0]}</span><strong>{product.name.split(' ')[0]}</strong><small>INTERIOR / EXTERIOR</small></div><span className="product-badge">Ask price</span></div><div className="product-content"><p className="product-brand">{product.brand}</p><h3>{product.name}</h3><p className="muted">{product.type} · {product.size}</p><a href={`https://wa.me/?text=${encodeURIComponent(`Hi Taj Traders, I would like the price for ${product.name}.`)}`} className="product-link">Ask on WhatsApp <ArrowRight size={16} /></a></div></article>)}</div></section>
+  return <section className="section" id="brands">
+    <div className="section-heading"><div><p className="eyebrow">Brands we deal in</p><h2>Trusted paints.<br /><em>Better finishes.</em></h2></div><p className="section-intro">We stock genuine products from the three paint brands we trust for homes, businesses and builders in Faisalabad.</p></div>
+    <div className="brand-strip" aria-label="Brands we deal in">{catalogBrands.map((brand, index) => <div className={`brand-tile brand-tile-${index % 3}`} key={brand.id}><span>{brand.logo || brand.name.split(' ').map((part) => part[0]).join('').slice(0, 2)}</span><strong>{brand.name}</strong></div>)}</div>
+    <div className="section-heading product-heading"><div><p className="eyebrow">Popular picks</p><h2>Good products.<br /><em>Great advice.</em></h2></div></div>
+    <div className="product-grid">{catalogProducts.map((product) => <article className="product-card" key={product.name}><div className={`product-image ${product.tone}`}><div className="can"><span>{product.brand.split(' ')[0]}</span><strong>{product.name.split(' ')[0]}</strong><small>INTERIOR / EXTERIOR</small></div><span className="product-badge">Ask price</span></div><div className="product-content"><p className="product-brand">{product.brand}</p><h3>{product.name}</h3><p className="muted">{product.type} · {product.size}</p><a href={`https://wa.me/?text=${encodeURIComponent(`Hi Taj Traders, I would like the price for ${product.name}.`)}`} className="product-link">Ask on WhatsApp <ArrowRight size={16} /></a></div></article>)}</div>
+  </section>
 }
 
 function WhySection() {

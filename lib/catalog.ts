@@ -14,6 +14,8 @@ export interface Brand {
   slug: string
   logo?: string
   description?: string
+  isVerified: boolean
+  isActive: boolean
 }
 
 export interface Product {
@@ -52,9 +54,9 @@ const FALLBACK_CATEGORIES: Category[] = [
 ]
 
 const FALLBACK_BRANDS: Brand[] = [
-  { id: '1', name: 'Nippon Paint', slug: 'nippon-paint', description: 'Premium paint solutions' },
-  { id: '2', name: 'Brighto', slug: 'brighto', description: 'Weather resistant finishes' },
-  { id: '3', name: 'Master Paints', slug: 'master-paints', description: 'Professional quality' },
+  { id: 'master-paints', name: 'Master Paints', slug: 'master-paints', logo: 'MP', description: 'Professional quality finishes', isVerified: true, isActive: true },
+  { id: 'diamond-paints', name: 'Diamond Paints', slug: 'diamond-paints', logo: 'DP', description: 'Trusted color and protection', isVerified: true, isActive: true },
+  { id: 'duramax-paints', name: 'Duramax Paints', slug: 'duramax-paints', logo: 'DX', description: 'Durable everyday coverage', isVerified: true, isActive: true },
 ]
 
 const FALLBACK_PRODUCTS: Product[] = [
@@ -62,7 +64,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     id: '1',
     name: 'Vinilex 5000',
     slug: 'vinilex-5000',
-    brandId: '1',
+    brandId: 'master-paints',
     categoryId: '1',
     type: 'Interior emulsion',
     sizes: ['1L', '4L', '16L'],
@@ -77,7 +79,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     id: '2',
     name: 'Weather Shield',
     slug: 'weather-shield',
-    brandId: '2',
+    brandId: 'diamond-paints',
     categoryId: '2',
     type: 'Exterior protection',
     sizes: ['1L', '4L', '16L'],
@@ -92,7 +94,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     id: '3',
     name: 'Wood Finish',
     slug: 'wood-finish',
-    brandId: '3',
+    brandId: 'duramax-paints',
     categoryId: '3',
     type: 'Wood & metal finish',
     sizes: ['500ml', '1L', '4L'],
