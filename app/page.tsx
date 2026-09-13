@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowRight,
   BadgeCheck,
@@ -72,7 +72,39 @@ function CategorySection() {
 }
 
 function ProductsSection() {
-  return <section className="section" id="brands"><div className="section-heading"><div><p className="eyebrow">Popular picks</p><h2>Good products.<br /><em>Great advice.</em></h2></div><p className="section-intro">We stock trusted paints and finishing products from brands chosen for real-world performance.</p></div><div className="product-grid">{products.map((product) => <article className="product-card" key={product.name}><div className={`product-image ${product.tone}`}><div className="can"><span>{product.brand.split(' ')[0]}</span><strong>{product.name.split(' ')[0]}</strong><small>INTERIOR / EXTERIOR</small></div><span className="product-badge">Ask price</span></div><div className="product-content"><p className="product-brand">{product.brand}</p><h3>{product.name}</h3><p className="muted">{product.type} · {product.size}</p><a href={`https://wa.me/?text=${encodeURIComponent(`Hi Taj Traders, I would like the price for ${product.name}.`)}`} className="product-link">Ask on WhatsApp <ArrowRight size={16} /></a></div></article>)}</div></section>
+  const [catalogProducts, setCatalogProducts] = useState(products)
+
+  useEffect(() => {
+    async function loadCatalog() {
+      try {
+        const [productsResponse, brandsResponse] = await Promise.all([
+          fetch('/api/products'),
+          fetch('/api/brands'),
+        ])
+        if (!productsResponse.ok || !brandsResponse.ok) return
+        const remoteProducts = await productsResponse.json()
+        const brands = await brandsResponse.json()
+        if (!Array.isArray(remoteProducts) || remoteProducts.length === 0) return
+
+        setCatalogProducts(remoteProducts.map((product: { name: string; brandId: string; type?: string; sizes?: string[] }, index: number) => {
+          const brand = brands.find((item: { id: string }) => item.id === product.brandId)
+          return {
+            brand: brand?.name || 'Taj Traders',
+            name: product.name,
+            type: product.type || 'Paint & finishing product',
+            size: product.sizes?.join(' · ') || 'Ask for sizes',
+            tone: ['navy', 'terracotta', 'ochre'][index % 3],
+          }
+        }))
+      } catch {
+        // Keep the curated fallback catalog when KV is unavailable.
+      }
+    }
+
+    loadCatalog()
+  }, [])
+
+  return <section className="section" id="brands"><div className="section-heading"><div><p className="eyebrow">Popular picks</p><h2>Good products.<br /><em>Great advice.</em></h2></div><p className="section-intro">We stock trusted paints and finishing products from brands chosen for real-world performance.</p></div><div className="product-grid">{catalogProducts.map((product) => <article className="product-card" key={product.name}><div className={`product-image ${product.tone}`}><div className="can"><span>{product.brand.split(' ')[0]}</span><strong>{product.name.split(' ')[0]}</strong><small>INTERIOR / EXTERIOR</small></div><span className="product-badge">Ask price</span></div><div className="product-content"><p className="product-brand">{product.brand}</p><h3>{product.name}</h3><p className="muted">{product.type} · {product.size}</p><a href={`https://wa.me/?text=${encodeURIComponent(`Hi Taj Traders, I would like the price for ${product.name}.`)}`} className="product-link">Ask on WhatsApp <ArrowRight size={16} /></a></div></article>)}</div></section>
 }
 
 function WhySection() {
