@@ -19,6 +19,8 @@ button, input { font: inherit; }
 .desktop-nav { display: flex; gap: clamp(16px, 2.5vw, 35px); margin-left: auto; font-size: 13px; font-weight: 700; color: #667085; }
 .desktop-nav a:hover, .footer-main a:hover { color: #1f5aa6; }
 .header-actions { display: flex; align-items: center; gap: 14px; }
+.admin-link { color: #123b7a; font-size: 11px; font-weight: 800; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
+.admin-link:hover { color: #c8102e; }
 .header-phone { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; color: #123b7a; }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid #123b7a; background: #123b7a; color: white; padding: 14px 20px; font-size: 13px; font-weight: 800; transition: .2s ease; }
 .button:hover { background: #1f5aa6; border-color: #1f5aa6; transform: translateY(-1px); }
